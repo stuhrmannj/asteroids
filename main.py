@@ -1,9 +1,9 @@
-# this allows us to use code from
-# the open-source pygame library
-# throughout this file
 import pygame
 from constants import *
 from player import *
+from asteroid import *
+from asteroidfield import *
+import sys
 
 def main():
     pygame.init()
@@ -17,10 +17,14 @@ def main():
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
+    asteroids = pygame.sprite.Group()
 
     Player.containers = (updatable, drawable)
+    Asteroid.containers = (asteroids, updatable, drawable)
+    AsteroidField.containers = (updatable,)
 
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2) #instantiate a Player object
+    asteroid_field = AsteroidField()
 
     while True: # This loop will run indefinitely
         for event in pygame.event.get(): # this allows the close window button to work
@@ -30,6 +34,10 @@ def main():
         for entity in drawable: # This creates the objects of the game
             entity.draw(screen) 
         updatable.update(dt)  #This updates the game with inputs (like moving and steering the ship)
+        for asteroid in asteroids:
+            if player.collides_with(asteroid):
+                print("Game over!")
+                sys.exit()
         pygame.display.flip()  # This updates the window with the new frame
         dt = clock.tick(60) / 1000 #sets the game loop to 60 frames per second
 
